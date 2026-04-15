@@ -1,0 +1,1 @@
+2026-04-15T17:56:00-03:00 - Initial setup: Created CLAUDE.md with prompt logging rules and initialized prompts.txt.
