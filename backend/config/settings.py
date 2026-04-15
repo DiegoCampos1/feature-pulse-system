@@ -117,6 +117,11 @@ CORS_ALLOWED_ORIGINS = os.environ.get(
 
 CORS_ALLOW_CREDENTIALS = True
 
+CSRF_TRUSTED_ORIGINS = os.environ.get(
+    "CSRF_TRUSTED_ORIGINS",
+    "http://localhost:3000",
+).split(",")
+
 # Django REST Framework
 
 REST_FRAMEWORK = {

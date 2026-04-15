@@ -146,3 +146,28 @@ feature-pulse-system/
 | **Docker Compose** | Single command to run all three services (PostgreSQL, Django, Next.js) with consistent environments. Volume mounts enable hot reload in development. |
 | **Mobile-first** | All layouts designed for 375px first, then scaled up with `sm:` breakpoints. Ensures the most constrained viewport is always usable. |
 | **UUID Primary Keys** | Prevents enumeration attacks and avoids sequential ID conflicts in distributed scenarios. All models inherit from `UUIDMixin`. |
+
+## Deploy (Railway)
+
+Both services have production-ready Dockerfiles. Railway detects the Dockerfile in each service root automatically.
+
+### Backend (`api`) Environment Variables
+
+| Variable | Value |
+|----------|-------|
+| `DATABASE_URL` | Provided automatically by Railway PostgreSQL plugin |
+| `DJANGO_SECRET_KEY` | Strong random secret (e.g. `python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"`) |
+| `DEBUG` | `false` |
+| `ALLOWED_HOSTS` | Your Railway domain (e.g. `api-production-xxxx.up.railway.app`) |
+| `CORS_ALLOWED_ORIGINS` | Frontend Railway URL (e.g. `https://featurepulse-production-xxxx.up.railway.app`) |
+| `CSRF_TRUSTED_ORIGINS` | Same as `CORS_ALLOWED_ORIGINS` |
+| `PORT` | Set automatically by Railway |
+
+### Frontend (`web`) Environment Variables
+
+| Variable | Value |
+|----------|-------|
+| `NEXT_PUBLIC_API_URL` | Backend Railway URL + `/api/v1` (e.g. `https://api-production-xxxx.up.railway.app/api/v1`) |
+| `PORT` | Set automatically by Railway |
+
+> **Note:** `NEXT_PUBLIC_API_URL` is baked into the Next.js build at build time. If you change the backend URL, you must redeploy the frontend.

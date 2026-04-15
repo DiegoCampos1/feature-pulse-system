@@ -15,6 +15,8 @@ RUN if [ "$DEV" = "true" ]; then \
 
 COPY . .
 
+RUN if [ "$DEV" = "false" ]; then python manage.py collectstatic --noinput; fi
+
 EXPOSE 8000
 
 CMD ["sh", "-c", "python manage.py migrate --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:${PORT:-8000} --workers 2"]
