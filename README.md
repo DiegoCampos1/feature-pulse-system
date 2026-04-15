@@ -4,13 +4,6 @@
 
 A full-stack feature voting system where users submit, discover, and prioritize product feature requests. Built with Django REST Framework and Next.js as a production-ready monorepo with Docker Compose orchestration.
 
-## Screenshots
-
-| Dark Mode | Light Mode |
-|-----------|------------|
-| ![Home - Dark](./docs/screenshots/home-dark.png) | ![Home - Light](./docs/screenshots/home-light.png) |
-| ![Login](./docs/screenshots/login.png) | ![Submit Feature](./docs/screenshots/submit-feature.png) |
-
 ## Tech Stack
 
 ### Frontend
