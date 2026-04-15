@@ -64,7 +64,7 @@ export function FeatureCard({ feature }: FeatureCardProps) {
 
   return (
     <div
-      className={`group flex items-stretch gap-0 overflow-hidden rounded-xl bg-card text-card-foreground ring-1 ring-foreground/10 shadow-sm transition-shadow duration-200 hover:shadow-md ${
+      className={`group flex items-stretch gap-0 overflow-hidden rounded-xl bg-card text-card-foreground ring-1 ring-foreground/10 shadow-sm transition-all duration-200 hover:shadow-md hover:ring-foreground/20 dark:hover:ring-primary/30 ${
         feature.has_voted ? "border-l-3 border-l-primary" : ""
       }`}
     >

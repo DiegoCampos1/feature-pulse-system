@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function Navbar() {
   const { user, isAuthenticated, isLoading, logout } = useAuth();
@@ -38,7 +39,9 @@ export function Navbar() {
           <span>FeaturePulse</span>
         </Link>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
+          <ThemeToggle />
+
           {isLoading ? null : isAuthenticated ? (
             <>
               <Button variant="default" size="sm" onClick={() => router.push("/features/new")}>
