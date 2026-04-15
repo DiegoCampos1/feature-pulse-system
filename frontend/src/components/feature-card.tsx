@@ -72,7 +72,7 @@ export function FeatureCard({ feature }: FeatureCardProps) {
       <button
         ref={btnRef}
         onClick={handleVote}
-        className={`flex w-16 shrink-0 flex-col items-center justify-center gap-0.5 border-r transition-colors sm:w-20 ${
+        className={`flex w-16 shrink-0 cursor-pointer flex-col items-center justify-center gap-0.5 border-r transition-colors sm:w-20 ${
           feature.has_voted
             ? "border-primary/20 bg-primary text-primary-foreground"
             : "border-border bg-muted/40 text-muted-foreground hover:bg-primary/5 hover:text-primary"
