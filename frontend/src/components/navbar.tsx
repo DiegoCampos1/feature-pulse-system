@@ -32,7 +32,9 @@ export function Navbar() {
     <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
-          <Zap className="size-5 text-primary" />
+          <div className="flex size-7 items-center justify-center rounded-lg bg-primary">
+            <Zap className="size-4 text-primary-foreground" />
+          </div>
           <span>FeaturePulse</span>
         </Link>
 
@@ -51,7 +53,9 @@ export function Navbar() {
                   }
                 >
                   <Avatar size="sm">
-                    <AvatarFallback>{initials}</AvatarFallback>
+                    <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
+                      {initials}
+                    </AvatarFallback>
                   </Avatar>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" sideOffset={8}>
