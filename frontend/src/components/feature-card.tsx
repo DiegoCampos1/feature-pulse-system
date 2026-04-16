@@ -1,11 +1,23 @@
 "use client";
 
-import { useRef } from "react";
-import { ChevronUp, Clock, User } from "lucide-react";
+import { useRef, useState } from "react";
+import { ChevronUp, Clock, Trash2, User } from "lucide-react";
 import { toast } from "sonner";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
+import api from "@/lib/api";
 import { useAuthStore } from "@/stores/auth-store";
 import { useVote } from "@/hooks/use-vote";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import type { FeatureRequest, FeatureStatus } from "@/types";
 
 const STATUS_STYLES: Record<FeatureStatus, string> = {
@@ -44,9 +56,26 @@ interface FeatureCardProps {
 }
 
 export function FeatureCard({ feature }: FeatureCardProps) {
+  const user = useAuthStore((s) => s.user);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const voteMutation = useVote();
   const btnRef = useRef<HTMLButtonElement>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const queryClient = useQueryClient();
+
+  const isOwner = user?.id === feature.created_by.id;
+
+  const deleteMutation = useMutation({
+    mutationFn: () => api.delete(`/features/${feature.id}/`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["features"] });
+      toast.success("Feature deleted");
+      setConfirmOpen(false);
+    },
+    onError: () => {
+      toast.error("Failed to delete feature");
+    },
+  });
 
   const handleVote = () => {
     if (!isAuthenticated) {
@@ -63,59 +92,93 @@ export function FeatureCard({ feature }: FeatureCardProps) {
   };
 
   return (
-    <div
-      className={`group flex items-stretch gap-0 overflow-hidden rounded-xl bg-card text-card-foreground ring-1 ring-foreground/10 shadow-sm transition-all duration-200 hover:shadow-md hover:ring-foreground/20 dark:hover:ring-primary/30 ${
-        feature.has_voted ? "border-l-3 border-l-primary" : ""
-      }`}
-    >
-      {/* Vote button */}
-      <button
-        ref={btnRef}
-        onClick={handleVote}
-        className={`flex w-16 shrink-0 cursor-pointer flex-col items-center justify-center gap-0.5 border-r transition-colors sm:w-20 ${
-          feature.has_voted
-            ? "border-primary/20 bg-primary text-primary-foreground"
-            : "border-border bg-muted/40 text-muted-foreground hover:bg-primary/5 hover:text-primary"
+    <>
+      <div
+        className={`group flex items-stretch gap-0 overflow-hidden rounded-xl bg-card text-card-foreground ring-1 ring-foreground/10 shadow-sm transition-all duration-200 hover:shadow-md hover:ring-foreground/20 dark:hover:ring-primary/30 ${
+          feature.has_voted ? "border-l-3 border-l-primary" : ""
         }`}
       >
-        <ChevronUp className="size-5" />
-        <span className="text-lg font-bold leading-none">{feature.vote_count}</span>
-        <span className="text-[10px] font-medium uppercase tracking-wide opacity-70">votes</span>
-      </button>
+        {/* Vote button */}
+        <button
+          ref={btnRef}
+          onClick={handleVote}
+          className={`flex w-16 shrink-0 cursor-pointer flex-col items-center justify-center gap-0.5 border-r transition-colors sm:w-20 ${
+            feature.has_voted
+              ? "border-primary/20 bg-primary text-primary-foreground"
+              : "border-border bg-muted/40 text-muted-foreground hover:bg-primary/5 hover:text-primary"
+          }`}
+        >
+          <ChevronUp className="size-5" />
+          <span className="text-lg font-bold leading-none">{feature.vote_count}</span>
+          <span className="text-[10px] font-medium uppercase tracking-wide opacity-70">votes</span>
+        </button>
 
-      {/* Content */}
-      <div className="flex min-w-0 flex-1 flex-col justify-center gap-1.5 px-4 py-3 sm:gap-2 sm:py-4">
-        {/* Title + Badge */}
-        <div className="flex items-start justify-between gap-2">
-          <h3 className="truncate text-sm font-semibold leading-snug sm:text-base">
-            {feature.title}
-          </h3>
-          <span
-            className={`inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[11px] font-medium ${STATUS_STYLES[feature.status]}`}
-          >
-            {STATUS_LABEL[feature.status]}
-          </span>
-        </div>
+        {/* Content */}
+        <div className="flex min-w-0 flex-1 flex-col justify-center gap-1.5 px-4 py-3 sm:gap-2 sm:py-4">
+          {/* Title + Badge */}
+          <div className="flex items-start justify-between gap-2">
+            <h3 className="truncate text-sm font-semibold leading-snug sm:text-base">
+              {feature.title}
+            </h3>
+            <span
+              className={`inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[11px] font-medium ${STATUS_STYLES[feature.status]}`}
+            >
+              {STATUS_LABEL[feature.status]}
+            </span>
+          </div>
 
-        {/* Description */}
-        <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground sm:line-clamp-3 sm:text-sm">
-          {feature.description}
-        </p>
+          {/* Description */}
+          <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground sm:line-clamp-3 sm:text-sm">
+            {feature.description}
+          </p>
 
-        {/* Metadata */}
-        <div className="flex items-center gap-3 text-[11px] text-muted-foreground sm:text-xs">
-          <span className="inline-flex items-center gap-1">
-            <User className="size-3" />
-            {feature.created_by.first_name} {feature.created_by.last_name}
-          </span>
-          <span className="text-border">&middot;</span>
-          <span className="inline-flex items-center gap-1">
-            <Clock className="size-3" />
-            {timeAgo(feature.created_at)}
-          </span>
+          {/* Metadata */}
+          <div className="flex items-center gap-3 text-[11px] text-muted-foreground sm:text-xs">
+            <span className="inline-flex items-center gap-1">
+              <User className="size-3" />
+              {feature.created_by.first_name} {feature.created_by.last_name}
+            </span>
+            <span className="text-border">&middot;</span>
+            <span className="inline-flex items-center gap-1">
+              <Clock className="size-3" />
+              {timeAgo(feature.created_at)}
+            </span>
+
+            {isOwner && (
+              <button
+                onClick={() => setConfirmOpen(true)}
+                className="ml-auto cursor-pointer rounded p-0.5 text-muted-foreground transition-colors hover:text-destructive"
+              >
+                <Trash2 className="size-3.5" />
+              </button>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* Delete confirmation dialog */}
+      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete feature request?</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete &ldquo;{feature.title}&rdquo;? This action cannot be
+              undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose render={<Button variant="outline" />}>Cancel</DialogClose>
+            <Button
+              variant="destructive"
+              onClick={() => deleteMutation.mutate()}
+              disabled={deleteMutation.isPending}
+            >
+              {deleteMutation.isPending ? "Deleting..." : "Delete"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 

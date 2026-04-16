@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LogOut, Plus, Zap } from "lucide-react";
+import { LogOut, Zap } from "lucide-react";
 
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -44,11 +44,6 @@ export function Navbar() {
 
           {isLoading ? null : isAuthenticated ? (
             <>
-              <Button variant="default" size="sm" onClick={() => router.push("/features/new")}>
-                <Plus data-icon="inline-start" />
-                Submit Feature
-              </Button>
-
               <DropdownMenu>
                 <DropdownMenuTrigger
                   render={
@@ -61,7 +56,7 @@ export function Navbar() {
                     </AvatarFallback>
                   </Avatar>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" sideOffset={8}>
+                <DropdownMenuContent align="end" sideOffset={8} className="min-w-48">
                   <div className="px-1.5 py-1 text-xs text-muted-foreground">{user?.email}</div>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout}>

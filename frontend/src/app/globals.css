@@ -129,6 +129,13 @@
   html {
     @apply font-sans;
   }
+  button,
+  [role="button"],
+  a,
+  summary,
+  [tabindex]:not([tabindex="-1"]) {
+    @apply cursor-pointer;
+  }
 }
 
 /* Vote button animations */

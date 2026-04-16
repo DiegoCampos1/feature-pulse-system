@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Sparkles } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Plus, Search, Sparkles } from "lucide-react";
 
 import { useFeatures } from "@/hooks/use-features";
 import { useAuthStore } from "@/stores/auth-store";
 import { FeatureCard, FeatureCardSkeleton } from "@/components/feature-card";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 const SORT_OPTIONS = [
@@ -19,6 +21,7 @@ export default function HomePage() {
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const router = useRouter();
 
   const { data, isLoading } = useFeatures({ ordering, search });
   const features = data?.results ?? [];
@@ -40,6 +43,14 @@ export default function HomePage() {
         <p className="mt-2 text-muted-foreground">
           Submit ideas, vote on what matters, and help us build what you need.
         </p>
+        <Button
+          size="lg"
+          className="mt-5"
+          onClick={() => router.push(isAuthenticated ? "/features/new" : "/login")}
+        >
+          <Plus data-icon="inline-start" />
+          Submit a Feature Request
+        </Button>
       </div>
 
       {!isAuthenticated && (
